@@ -32,18 +32,17 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN or (event.type == pygame.FINGERDOWN and event.finger_id == 0):
             is_drawing = True
-        elif event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP or (event.type == pygame.FINGERUP and event.finger_id == 0):
             is_drawing = False
             last_pos = None
-
-    # Draw on the surface if the mouse is pressed
-    if is_drawing:
-        mouse_pos = pygame.mouse.get_pos()
-        if last_pos is not None:
-            pygame.draw.line(drawing_surface, drawing_color, last_pos, mouse_pos, 3)
-        last_pos = mouse_pos
+        elif event.type == pygame.MOUSEMOTION or (event.type == pygame.FINGERMOTION and event.finger_id == 0):
+            if is_drawing:
+                pos = pygame.mouse.get_pos() if event.type == pygame.MOUSEMOTION else (event.x, event.y)
+                if last_pos is not None:
+                    pygame.draw.line(drawing_surface, drawing_color, last_pos, pos, 3)
+                last_pos = pos
 
     # Blit the drawing surface onto the screen
     screen.blit(drawing_surface, (0, 0))
